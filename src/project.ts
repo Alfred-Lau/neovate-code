@@ -1,7 +1,7 @@
 import type { Context } from './context';
 import { JsonlLogger, RequestLogger } from './jsonl';
 import { LlmsContext } from './llmsContext';
-import { runLoop, type StreamResult } from './loop';
+import { runLoop, type StreamResult, type ThinkingConfig } from './loop';
 import type { ImagePart, NormalizedMessage, UserContent } from './message';
 import { resolveModelWithContext } from './model';
 import { OutputFormat } from './outputFormat';
@@ -40,9 +40,7 @@ export class Project {
       signal?: AbortSignal;
       attachments?: ImagePart[];
       parentUuid?: string;
-      thinking?: {
-        effort: 'low' | 'medium' | 'high';
-      };
+      thinking?: ThinkingConfig;
     } = {},
   ) {
     let tools = await resolveTools({
@@ -92,9 +90,7 @@ export class Project {
       signal?: AbortSignal;
       attachments?: ImagePart[];
       parentUuid?: string;
-      thinking?: {
-        effort: 'low' | 'medium' | 'high';
-      };
+      thinking?: ThinkingConfig;
     } = {},
   ) {
     let tools = await resolveTools({
@@ -146,9 +142,7 @@ export class Project {
       systemPrompt?: string;
       attachments?: ImagePart[];
       parentUuid?: string;
-      thinking?: {
-        effort: 'low' | 'medium' | 'high';
-      };
+      thinking?: ThinkingConfig;
     } = {},
   ) {
     const startTime = new Date();
