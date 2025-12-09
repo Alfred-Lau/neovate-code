@@ -91,6 +91,21 @@ const TEST_HANDLERS: TestHandler[] = [
       model: 'cerebras/zai-glm-4.6',
     }),
   },
+  {
+    label: 'Utils: Open (Cursor)',
+    handler: 'utils.open',
+    getData: () => ({
+      cwd: process.cwd(),
+      app: 'cursor' as const,
+    }),
+  },
+  {
+    label: 'Utils: Detect Apps',
+    handler: 'utils.detectApps',
+    getData: () => ({
+      cwd: process.cwd(),
+    }),
+  },
 ];
 
 type State = 'selecting' | 'executing' | 'displaying';

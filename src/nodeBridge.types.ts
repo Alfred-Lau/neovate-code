@@ -671,21 +671,36 @@ type UtilsToolExecuteBashOutput = {
   error?: { message: string };
 };
 
+/** Supported application types for open and detect operations */
+export type App =
+  | 'cursor'
+  | 'vscode'
+  | 'vscode-insiders'
+  | 'zed'
+  | 'windsurf'
+  | 'iterm'
+  | 'warp'
+  | 'terminal'
+  | 'antigravity'
+  | 'finder'
+  | 'sourcetree';
+
 type UtilsOpenInput = {
   cwd: string;
   sessionId?: string;
-  app:
-    | 'cursor'
-    | 'vscode'
-    | 'vscode-insiders'
-    | 'zed'
-    | 'windsurf'
-    | 'iterm'
-    | 'warp'
-    | 'terminal'
-    | 'antigravity'
-    | 'finder'
-    | 'sourcetree';
+  app: App;
+};
+
+type UtilsDetectAppsInput = {
+  cwd: string;
+  apps?: App[]; // if omitted, detect all
+};
+
+type UtilsDetectAppsOutput = {
+  success: boolean;
+  data: {
+    apps: App[]; // list of installed apps
+  };
 };
 
 // ============================================================================
@@ -893,6 +908,10 @@ export type HandlerMap = {
     output: UtilsToolExecuteBashOutput;
   };
   'utils.open': { input: UtilsOpenInput; output: SuccessResponse };
+  'utils.detectApps': {
+    input: UtilsDetectAppsInput;
+    output: UtilsDetectAppsOutput;
+  };
 
   // UI Bridge handlers
   toolApproval: { input: ToolApprovalInput; output: ToolApprovalOutput };
