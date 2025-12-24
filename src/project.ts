@@ -167,6 +167,7 @@ export class Project {
       format: this.context.config.outputFormat!,
       quiet: this.context.config.quiet,
     });
+
     const jsonlLogger = new JsonlLogger({
       filePath: this.context.paths.getSessionLogPath(this.session.id),
     });
@@ -458,6 +459,7 @@ export class Project {
     if (result.success && result.data.history) {
       this.session.updateHistory(result.data.history);
     }
+
     return result;
   }
 }
