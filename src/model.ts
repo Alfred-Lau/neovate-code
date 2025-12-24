@@ -10,6 +10,11 @@ import {
   createOpenRouter,
   type LanguageModelV2,
 } from '@openrouter/ai-sdk-provider';
+import {
+  extractReasoningMiddleware,
+  type LanguageModelMiddleware,
+  wrapLanguageModel,
+} from 'ai';
 import assert from 'assert';
 import defu from 'defu';
 import {
@@ -22,6 +27,7 @@ import type { Context } from './context';
 import { PluginHookType } from './plugin';
 import { getThinkingConfig } from './thinking-config';
 import { rotateApiKey } from './utils/apiKeyRotation';
+import { mergeSystemMessagesMiddleware } from './utils/mergeSystemMessagesMiddleware';
 
 export interface ModelModalities {
   input: ('text' | 'image' | 'audio' | 'video' | 'pdf')[];
@@ -1128,6 +1134,8 @@ function getProviderApiKey(provider: Provider) {
 
 export const createModelCreatorCompatible = (opts?: {
   headers?: Record<string, string>;
+  fetch?: any;
+  middlewares?: LanguageModelMiddleware[];
 }) => {
   return (name: string, provider: Provider): LanguageModelV2 => {
     if (provider.id !== 'openai') {
@@ -1136,17 +1144,22 @@ export const createModelCreatorCompatible = (opts?: {
     const baseURL = getProviderBaseURL(provider);
     const apiKey = getProviderApiKey(provider);
     assert(baseURL, 'baseURL is required');
-    return createOpenAICompatible(
+    let model = createOpenAICompatible(
       withProxyConfig(
         {
           name: provider.id,
           baseURL,
           apiKey,
           headers: opts?.headers,
+          fetch: opts?.fetch,
         },
         provider,
       ),
     )(name);
+    if (opts?.middlewares) {
+      model = wrapLanguageModel({ model, middleware: opts.middlewares });
+    }
+    return model;
   };
 };
 
@@ -1491,9 +1504,27 @@ export const providers: ProvidersMap = {
       'deepseek-v3.2': models['deepseek-v3-2-exp'],
       'deepseek-r1': models['deepseek-r1-0528'],
       'glm-4.6': models['glm-4.6'],
+      'glm-4.7': models['glm-4.7'],
+      'minimax-m2.1': models['minimax-m2.1'],
       'qwen3-max': models['qwen3-max'],
     },
-    createModel: defaultModelCreator,
+    createModel: createModelCreatorCompatible({
+      fetch: (url: string, options: any) => {
+        return fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            'user-agent': 'iFlow-Cli',
+          },
+        });
+      },
+      middlewares: [
+        mergeSystemMessagesMiddleware,
+        extractReasoningMiddleware({
+          tagName: 'think',
+        }),
+      ],
+    }),
   },
   moonshotai: {
     id: 'moonshotai',
