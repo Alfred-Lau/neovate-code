@@ -6,7 +6,10 @@ This document covers the development workflow and best practices for the Neovate
 
 Before implementing any non-trivial feature or change:
 
-1. **Brainstorm** - Use `/spec:brainstorm` command with Claude Opus 4.5 or Sonnet 4.5 to generate a design document
+1. **Brainstorm** - Use `/spec:brainstorm` command with Claude Opus 4.5 or Sonnet 4.5 to generate a design document. Before designing, conduct competitive research:
+   - Check [Claude Code](https://docs.anthropic.com/en/docs/claude-code) for similar features/patterns (primary reference)
+   - Review alternatives like Cursor, Aider, Copilot if relevant
+   - Understand how competitors solve similar problems to inform our approach
 2. **Review** - Post the design to the team group chat or directly to 云谦 for feedback
 3. **Iterate** - Refine the design based on feedback before writing code
 
